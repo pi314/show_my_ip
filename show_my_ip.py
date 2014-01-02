@@ -9,7 +9,7 @@ def show_my_ip ():
                (?P<NAME>\S.*?):\n
                \n
                (?:\ \ \ .*?\n)*
-               \ \ \ .*?IPv4.*?: (?P<IP>\S*)
+               \ \ \ .*?IPv4.*?:\ *(?P<IP>\S*)
             '''
     return dict(m.groups() for m in re.finditer(patt, ipconfig, re.VERBOSE))
 
