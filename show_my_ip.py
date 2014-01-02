@@ -1,10 +1,11 @@
+import re
+import subprocess as sub
+
 def show_my_ip ():
-    import re
-    import subprocess as sub
     ipconfig = sub.check_output(['ipconfig'])
     ipconfig = ipconfig.decode('cp950').encode('utf8')
-    ipconfig = re.sub(r'\r\n', r'\n', ipconfig)
-    ipconfig = re.sub(r'\n\n', r'\n', ipconfig)
+    ipconfig = ipconfig.replace('\r\n', '\n')
+    ipconfig = ipconfig.replace('\n\n', '\n')
 
     NIC_name_re = '[^ \n].*'
     IP_re = r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
@@ -18,7 +19,6 @@ def show_my_ip ():
         ipconfig,
         re.MULTILINE
     )
-
     return dict(result)
 
 if __name__ == '__main__':
