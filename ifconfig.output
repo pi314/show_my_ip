@@ -1,0 +1,14 @@
+re0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
+        options=8209b<RXCSUM,TXCSUM,VLAN_MTU,VLAN_HWTAGGING,VLAN_HWCSUM,WOL_MAGIC,LINKSTATE>
+        ether 00:00:00:00:00:00
+        inet 111.111.111.111 netmask 0xffffffff broadcast 222.222.222.222
+        inet6 0000::0000:0000:0000:0000%re0 prefixlen 64 scopeid 0x1
+        nd6 options=29<PERFORMNUD,IFDISABLED,AUTO_LINKLOCAL>
+        media: Ethernet autoselect (100baseTX <full-duplex>)
+        status: active
+lo0: flags=8049<UP,LOOPBACK,RUNNING,MULTICAST> metric 0 mtu 16384
+        options=600003<RXCSUM,TXCSUM,RXCSUM_IPV6,TXCSUM_IPV6>
+        inet6 ::1 prefixlen 128
+        inet6 0000::0%lo0 prefixlen 64 scopeid 0x2
+        inet 127.0.0.1 netmask 0xff000000
+        nd6 options=21<PERFORMNUD,AUTO_LINKLOCAL>
