@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     print('Python version %d detected.'%(VERSION))
     if VERSION == 3 and RUN_IN_WINDOWS:
-        print('This program is not supported in Python3 and in Cygwin, use Python2 insteed.')
+        print('This program is not supported in "Python3 in Cygwin", use Python2 insteed.')
         print('Sorry for the inconvenience.')
         exit()
 
