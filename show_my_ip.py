@@ -31,17 +31,18 @@ def show_my_ip_ifconfig ():
     return dict(m.groups() for m in re.finditer(patt, ifconfig, re.VERBOSE))
 
 def show_my_ip ():
+    if VERSION == 3 and RUN_IN_WINDOWS:
+        print('This program is not supported in "Python3 in Cygwin", use Python2 insteed.',
+            file=sys.stderr)
+        print('Sorry for the inconvenience.',
+            file=sys.stderr)
+        return ()
+
     if RUN_IN_WINDOWS:
         return show_my_ip_ipconfig()
     return show_my_ip_ifconfig()
 
 if __name__ == '__main__':
-
-    print('Python version %d detected.'%(VERSION))
-    if VERSION == 3 and RUN_IN_WINDOWS:
-        print('This program is not supported in "Python3 in Cygwin", use Python2 insteed.')
-        print('Sorry for the inconvenience.')
-        exit()
 
     print('Detected IP addresses:\n')
     result = show_my_ip()
