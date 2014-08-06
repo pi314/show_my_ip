@@ -22,11 +22,11 @@ class NetworkInterface ():
         self.ip_addr = ip_addr
 
     def set_mac_addr (self, mac_addr):
-        self.mac_addr = mac_addr
+        self.mac_addr = mac_addr.strip()
 
     def set_netmask (self, netmask):
         if netmask.startswith('0x'):
-            self.netmask_hex = netmask[2:]
+            self.netmask_hex = netmask
             self.netmask_len = bin( int(netmask, 16) ).count('1')
             self.netmask_ip  = '.'.join(
                 map(
@@ -34,6 +34,17 @@ class NetworkInterface ():
                     zip(netmask[2::2], netmask[3::2])
                 )
             )
+        elif netmask.count('.') == 3:
+            self.netmask_ip  = netmask
+            netmask_int_list = map(int, netmask.split('.') )
+            self.netmask_len = ''.join(
+                map(bin,  netmask_int_list)
+            ).count('1')
+            self.netmask_hex = '0x' + ''.join(
+                map(lambda x: hex(x)[2:].zfill(2), netmask_int_list)
+            )
+        else:
+            self.raw_netmask = netmask
 
     def __str__ (self):
         return '<NetworkInterface: '+\
@@ -82,6 +93,39 @@ def show_my_ip_ifconfig_freebsd ():
 
             if 'netmask' in packet:
                 nic.set_netmask(packet['netmask'])
+
+    return ret
+
+def show_my_ip_ifconfig_linux ():
+
+    if PYTHON_VERSION == 3:
+        ifconfig_output = str(sub.getoutput(['ifconfig']))
+    else:
+        ifconfig_output = str(sub.check_output(['ifconfig']))
+
+    ret = list()
+
+    for i in ifconfig_output.splitlines():
+        if i.strip() == '':
+            continue
+
+        if i[0] != ' ':
+            nic = NetworkInterface(i.split(' ')[0])
+            if 'HWaddr' in i:
+                nic.set_mac_addr( i[ i.find('HWaddr')+7:] )
+            ret.append(nic)
+
+        i = i.strip()
+
+        if i.startswith('inet '):
+            i = i.split()[1:]
+            packet = dict( map(lambda x:tuple(x.split(':')), i) )
+
+            if 'addr' in packet:
+                nic.set_ip(packet['addr'])
+
+            if 'Mask' in packet:
+                nic.set_netmask(packet['Mask'])
 
     return ret
 
