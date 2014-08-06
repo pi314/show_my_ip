@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 from __future__ import print_function
 import re
 import subprocess as sub
@@ -17,8 +18,9 @@ class NetworkInterface ():
         self.netmask_hex = ''
         self.netmask_ip  = ''
         self.netmask_len = 0
+        self.gateway     = ''
 
-    def set_ip (self, ip_addr):
+    def set_ip_addr (self, ip_addr):
         self.ip_addr = ip_addr
 
     def set_mac_addr (self, mac_addr):
@@ -46,21 +48,52 @@ class NetworkInterface ():
         else:
             self.raw_netmask = netmask
 
+    def set_gateway (self, gateway):
+        self.gateway = gateway
+
     def __str__ (self):
         return '<NetworkInterface: '+\
             self.name +'('+ self.mac_addr +') '+\
             self.ip_addr +'/'+ str(self.netmask_len) +'>'
 
 def show_my_ip_ipconfig ():
-    ipconfig = str(sub.check_output(['ipconfig']))
-    ipconfig = ipconfig.decode('cp950').encode('utf8').replace('\r\n','\n')
-    patt = r'''\n
-               (?P<NAME>\S.*?):\n
-               \n
-               (?:\ \ \ .*?\n)*
-               \ \ \ .*?IPv4.*?:\ *(?P<IP>\S*)
-            '''
-    return dict(m.groups() for m in re.finditer(patt, ipconfig, re.VERBOSE))
+
+    if PYTHON_VERSION == 3:
+        ipconfig_output = sub.check_output(['ipconfig', '/all'])
+        import codecs
+        ipconfig_output = codecs.decode(bytes(ipconfig_output), 'cp950' )
+    else:
+        ipconfig_output = str(sub.check_output(['ipconfig', '/all']))
+        ipconfig_output = ipconfig_output.decode('cp950').encode('utf8')
+
+    ret = []
+
+    for i in ipconfig_output.splitlines():
+        if i.strip() == '':
+            continue
+
+        if i.startswith('Windows IP 設定'):
+            continue
+
+        if i[0] != ' ':
+            nic = NetworkInterface(i.split(':')[0])
+            ret.append(nic)
+
+        i = i.strip()
+
+        if i.startswith('實體位址'):
+            nic.set_mac_addr( i[i.find(':')+2:] )
+
+        if i.startswith('IPv4'):
+            nic.set_ip_addr( i[i.find(':')+2 : i.find('(')] )
+
+        if i.startswith('子網路遮罩'):
+            nic.set_netmask( i[i.find(':')+2:] )
+
+        if i.startswith('預設閘道'):
+            nic.set_gateway( i[i.find(':')+2:] )
+
+    return ret
 
 def show_my_ip_ifconfig_freebsd ():
 
@@ -89,7 +122,7 @@ def show_my_ip_ifconfig_freebsd ():
             packet = dict(zip(i[::2], i[1::2]))
 
             if 'inet' in packet:
-                nic.set_ip(packet['inet'])
+                nic.set_ip_addr(packet['inet'])
 
             if 'netmask' in packet:
                 nic.set_netmask(packet['netmask'])
@@ -122,7 +155,7 @@ def show_my_ip_ifconfig_linux ():
             packet = dict( map(lambda x:tuple(x.split(':')), i) )
 
             if 'addr' in packet:
-                nic.set_ip(packet['addr'])
+                nic.set_ip_addr(packet['addr'])
 
             if 'Mask' in packet:
                 nic.set_netmask(packet['Mask'])
@@ -130,12 +163,6 @@ def show_my_ip_ifconfig_linux ():
     return ret
 
 def show_my_ip ():
-    if PYTHON_VERSION == 3 and PLATFORM == 'cygwin':
-        print('This program is not supported in "Python3 in Cygwin", use Python2 insteed.',
-            file=sys.stderr)
-        print('Sorry for the inconvenience.',
-            file=sys.stderr)
-        return ()
 
     if PLATFORM == 'cygwin':
         return show_my_ip_ipconfig()
@@ -152,5 +179,7 @@ if __name__ == '__main__':
     result = show_my_ip()
     for nic in result:
         print( '{} : {}'.format(nic.name, nic.mac_addr) )
-        print( '   {}/{}'.format(nic.ip_addr, nic.netmask_len) )
+        print( '    {}/{}'.format(nic.ip_addr, nic.netmask_len) )
+        if nic.gateway != '':
+            print( '    Gateway: {}'.format(nic.gateway) )
         print( '' )
