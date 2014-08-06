@@ -56,7 +56,7 @@ class NetworkInterface ():
             self.name +'('+ self.mac_addr +') '+\
             self.ip_addr +'/'+ str(self.netmask_len) +'>'
 
-def show_my_ip_ipconfig ():
+def show_my_ip_ipconfig (all):
 
     if PYTHON_VERSION == 3:
         ipconfig_output = sub.check_output(['ipconfig', '/all'])
@@ -93,9 +93,11 @@ def show_my_ip_ipconfig ():
         if i.startswith('預設閘道'):
             nic.set_gateway( i[i.find(':')+2:] )
 
+    if not all:
+        return filter(lambda x:x.netmask_len!=0, ret)
     return ret
 
-def show_my_ip_ifconfig_freebsd ():
+def show_my_ip_ifconfig_freebsd (all):
 
     if PYTHON_VERSION == 3:
         ifconfig_output = str(sub.getoutput(['ifconfig']))
@@ -127,9 +129,11 @@ def show_my_ip_ifconfig_freebsd ():
             if 'netmask' in packet:
                 nic.set_netmask(packet['netmask'])
 
+    if not all:
+        return filter(lambda x:x.netmask_len!=0, ret)
     return ret
 
-def show_my_ip_ifconfig_linux ():
+def show_my_ip_ifconfig_linux (all):
 
     if PYTHON_VERSION == 3:
         ifconfig_output = str(sub.getoutput(['ifconfig']))
@@ -160,22 +164,26 @@ def show_my_ip_ifconfig_linux ():
             if 'Mask' in packet:
                 nic.set_netmask(packet['Mask'])
 
+    if not all:
+        return filter(lambda x:x.netmask_len!=0, ret)
     return ret
 
-def show_my_ip ():
+def show_my_ip (all=False):
+    # Yes, I know I just overrided the built-in function ``all``, but I know I won't use it.
 
     if PLATFORM == 'cygwin':
-        return show_my_ip_ipconfig()
+        return show_my_ip_ipconfig(all)
 
     elif PLATFORM.startswith('freebsd'):
-        return show_my_ip_ifconfig_freebsd()
+        return show_my_ip_ifconfig_freebsd(all)
 
     else: # guess the system is GNU-Linux-based
-        return show_my_ip_ifconfig_linux()
+        return show_my_ip_ifconfig_linux(all)
 
 if __name__ == '__main__':
 
     print('Detected Network Interfaces:\n')
+    #result = show_my_ip(all=True)
     result = show_my_ip()
     for nic in result:
         print( '{} : {}'.format(nic.name, nic.mac_addr) )
