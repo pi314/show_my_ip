@@ -186,8 +186,8 @@ if __name__ == '__main__':
     #result = show_my_ip(all=True)
     result = show_my_ip()
     for nic in result:
-        print( '{} : {}'.format(nic.name, nic.mac_addr) )
-        print( '    {}/{}'.format(nic.ip_addr, nic.netmask_len) )
+        print( '{}: {}'.format(nic.name, nic.mac_addr) )
+        print( '    IP/Mask: {}/{}'.format(nic.ip_addr, nic.netmask_len) )
         if nic.gateway != '':
             print( '    Gateway: {}'.format(nic.gateway) )
         print( '' )
