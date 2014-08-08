@@ -110,7 +110,7 @@ def show_my_ip_ifconfig_freebsd (all):
         if i.strip() == '':
             continue
 
-        if i[0] != ' ':
+        if i[0] not in  [' ', '\t']:
             nic = NetworkInterface(i.split(':')[0])
             ret.append(nic)
 
