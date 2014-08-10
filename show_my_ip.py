@@ -180,8 +180,7 @@ def show_my_ip (all=False):
     else: # guess the system is GNU-Linux-based
         return show_my_ip_ifconfig_linux(all)
 
-if __name__ == '__main__':
-
+def main ():
     print('Detected Network Interfaces:\n')
     #result = show_my_ip(all=True)
     result = show_my_ip()
@@ -191,3 +190,6 @@ if __name__ == '__main__':
         if nic.gateway != '':
             print( '    Gateway: {}'.format(nic.gateway) )
         print( '' )
+
+if __name__ == '__main__':
+    main()
