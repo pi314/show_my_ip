@@ -174,7 +174,7 @@ def get_nic_info (all=False):
     if PLATFORM == 'cygwin':
         return get_nic_info_ipconfig(all)
 
-    elif PLATFORM.startswith('freebsd'):
+    elif PLATFORM.startswith('freebsd') or PLATFORM == 'darwin':
         return get_nic_info_ifconfig_freebsd(all)
 
     else: # guess the system is GNU-Linux-based
