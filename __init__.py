@@ -180,10 +180,9 @@ def get_nic_info (all=False):
     else: # guess the system is GNU-Linux-based
         return get_nic_info_ifconfig_linux(all)
 
-def output ():
+def output (all=False):
     print('Detected Network Interfaces:\n')
-    #result = get_nic_info(all=True)
-    result = get_nic_info()
+    result = get_nic_info(all)
     for nic in result:
         print( '{}: {}'.format(nic.name, nic.mac_addr) )
         print( '    IP/Mask: {}/{}'.format(nic.ip_addr, nic.netmask_len) )
@@ -192,4 +191,7 @@ def output ():
         print( '' )
 
 if __name__ == '__main__':
-    output()
+    if len(sys.argv) > 1 and sys.argv[1] in ('-a', '--all'):
+        output(all=True)
+    else:
+        output()
