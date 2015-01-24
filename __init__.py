@@ -58,12 +58,13 @@ class NetworkInterface ():
 
 def get_nic_info_ipconfig (all):
 
+    ipconfig_command = ['/cygdrive/c/Windows/System32/ipconfig', '/all']
     if PYTHON_VERSION == 3:
-        ipconfig_output = sub.check_output(['ipconfig', '/all'])
+        ipconfig_output = sub.check_output(ipconfig_command)
         import codecs
         ipconfig_output = codecs.decode(bytes(ipconfig_output), 'cp950' )
     else:
-        ipconfig_output = str(sub.check_output(['ipconfig', '/all']))
+        ipconfig_output = str(sub.check_output(ipconfig_command))
         ipconfig_output = ipconfig_output.decode('cp950').encode('utf8')
 
     ret = []
