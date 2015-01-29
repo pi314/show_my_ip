@@ -1,5 +1,5 @@
-show_my_ip.py
-=============
+show-my-ip
+==========
 
 There is no ``ifconfig`` in Cygwin,
 so I wrote a little Python script to parse the result of ``ipconfig`` to get the name of NIC cards and their IP addresses.
