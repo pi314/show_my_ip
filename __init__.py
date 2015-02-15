@@ -95,7 +95,7 @@ def get_nic_info_ipconfig (all):
             nic.add_gateway( i[i.find(':')+2:] )
 
     if not all:
-        return filter(lambda x:x.netmask_len!=0, ret)
+        return filter(lambda x:len(x.ip_addr)!=0, ret)
 
     return ret
 
@@ -138,7 +138,8 @@ def get_nic_info_ifconfig (all):
                 nic.add_netmask( words[3] )
 
     if not all:
-        return filter(lambda x:x.netmask_len!=0, ret)
+        return filter(lambda x:len(x.ip_addr)!=0, ret)
+
     return ret
 
 def get_nic_info (all=False):
