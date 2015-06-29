@@ -58,7 +58,7 @@ class NetworkInterface:
         )
 
 
-def get_nic_info_ipconfig(all):
+def _get_nic_info_ipconfig(all):
 
     ipconfig_command = ['/cygdrive/c/Windows/System32/ipconfig', '/all']
     if PYTHON_VERSION == 3:
@@ -102,7 +102,7 @@ def get_nic_info_ipconfig(all):
     return ret
 
 
-def get_nic_info_ifconfig(all):
+def _get_nic_info_ifconfig(all):
 
     if PYTHON_VERSION == 3:
         ifconfig_output = str(sub.check_output(['ifconfig']), 'utf-8')
@@ -151,9 +151,9 @@ def get_nic_info(all=False):
     # but I know I won't use it.
 
     if PLATFORM == 'cygwin':
-        return get_nic_info_ipconfig(all)
+        return _get_nic_info_ipconfig(all)
 
-    return get_nic_info_ifconfig(all)
+    return _get_nic_info_ifconfig(all)
 
 
 def output(all=False):
@@ -166,6 +166,11 @@ def output(all=False):
         for i in nic.gateway:
             print('    Gateway: {}'.format(i))
         print('')
+
+__all__ = [
+    get_nic_info,
+    output
+]
 
 if __name__ == '__main__':
     output(all=len(sys.argv) > 1 and sys.argv[1] in ('-a', '--all'))
