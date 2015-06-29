@@ -5,8 +5,8 @@ import subprocess as sub
 import os
 import sys
 
-PYTHON_VERSION = sys.version_info[0]
-PLATFORM = sys.platform
+_PYTHON_VERSION = sys.version_info[0]
+_PLATFORM = sys.platform
 
 
 class NetworkInterface:
@@ -61,7 +61,7 @@ class NetworkInterface:
 def _get_nic_info_ipconfig(all):
 
     ipconfig_command = ['/cygdrive/c/Windows/System32/ipconfig', '/all']
-    if PYTHON_VERSION == 3:
+    if _PYTHON_VERSION == 3:
         ipconfig_output = sub.check_output(ipconfig_command)
         import codecs
         ipconfig_output = codecs.decode(bytes(ipconfig_output), 'cp950')
@@ -104,7 +104,7 @@ def _get_nic_info_ipconfig(all):
 
 def _get_nic_info_ifconfig(all):
 
-    if PYTHON_VERSION == 3:
+    if _PYTHON_VERSION == 3:
         ifconfig_output = str(sub.check_output(['ifconfig']), 'utf-8')
     else:
         ifconfig_output = str(sub.check_output(['ifconfig']))
@@ -150,7 +150,7 @@ def get_nic_info(all=False):
     # Yes, I know I just overrided the built-in function ``all``,
     # but I know I won't use it.
 
-    if PLATFORM == 'cygwin':
+    if _PLATFORM == 'cygwin':
         return _get_nic_info_ipconfig(all)
 
     return _get_nic_info_ifconfig(all)
@@ -168,8 +168,8 @@ def output(all=False):
         print('')
 
 __all__ = [
-    get_nic_info,
-    output
+    'get_nic_info',
+    'output'
 ]
 
 if __name__ == '__main__':
