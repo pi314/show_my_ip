@@ -58,9 +58,13 @@ class NetworkInterface:
         )
 
 
-def _get_nic_info_ipconfig(all):
+def _get_nic_info_ipconfig(all, cygwin=True):
 
-    ipconfig_command = ['/cygdrive/c/Windows/System32/ipconfig', '/all']
+    if cygwin:
+        ipconfig_command = ['/cygdrive/c/Windows/System32/ipconfig', '/all']
+    else:
+        ipconfig_command = ['c://Windows/System32/ipconfig', '/all']
+
     if _PYTHON_VERSION == 3:
         ipconfig_output = sub.check_output(ipconfig_command)
         import codecs
@@ -152,6 +156,9 @@ def get_nic_info(all=False):
 
     if _PLATFORM == 'cygwin':
         return _get_nic_info_ipconfig(all)
+
+    elif _PLATFORM == 'win32':
+        return _get_nic_info_ipconfig(all, cygwin=False)
 
     return _get_nic_info_ifconfig(all)
 
