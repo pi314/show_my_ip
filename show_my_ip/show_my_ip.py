@@ -4,13 +4,14 @@ from __future__ import print_function
 import subprocess as sub
 import os
 import sys
+import importlib
+import importlib.util
 
 _PYTHON_VERSION = sys.version_info[0]
 _PLATFORM = sys.platform
 
 
 class NetworkInterface:
-
     def __init__(self, name):
         self.name = name
         self.ip_addr = []
@@ -58,8 +59,33 @@ class NetworkInterface:
         )
 
 
-def _get_nic_info_ipconfig(all, cygwin=True):
+def _get_nic_info_netifaces(all):
+    import netifaces
+    ret = []
 
+    for iface in netifaces.interfaces():
+        info = netifaces.ifaddresses(iface)
+        if netifaces.AF_INET in info:
+            nic = NetworkInterface(iface)
+            if netifaces.AF_LINK in info:
+                nic.set_mac_addr(info[netifaces.AF_LINK][0]['addr'])
+
+            for addr in info[netifaces.AF_INET]:
+                nic.add_ip_addr(addr['addr'])
+                nic.add_netmask(addr['netmask'])
+                # print('    IP/Mask: {} / {}'.format(addr['addr'], addr['netmask']))
+
+            ret.append(nic)
+            # if netifaces.AF_LINK in info:
+            #     print('  {} ({})'.format(iface, info[netifaces.AF_LINK][0]['addr']))
+            # else:
+            #     print('  {}'.format(iface))
+            # for addr in info[netifaces.AF_INET]:
+            #     print('    IP/Mask: {} / {}'.format(addr['addr'], addr['netmask']))
+    return ret
+
+
+def _get_nic_info_ipconfig(all, cygwin=True):
     if cygwin:
         ipconfig_command = ['/cygdrive/c/Windows/System32/ipconfig', '/all']
     else:
@@ -107,7 +133,6 @@ def _get_nic_info_ipconfig(all, cygwin=True):
 
 
 def _get_nic_info_ifconfig(all):
-
     if _PYTHON_VERSION == 3:
         ifconfig_output = str(sub.check_output(['ifconfig']), 'utf-8')
     else:
@@ -154,19 +179,40 @@ def get_nic_info(all=False):
     # Yes, I know I just overrided the built-in function ``all``,
     # but I know I won't use it.
 
+    v = os.environ.get('VIRTUAL_ENV', None)
+    if v:
+        # hardcoded "3.5" should be fixed
+        sys.path = [v + '/lib/python3.5/site-packages'] + sys.path
+
+    if importlib.util.find_spec('netifaces'):
+        return {
+            'src': 'netifaces',
+            'info': _get_nic_info_netifaces(all),
+        }
+
+
     if _PLATFORM == 'cygwin':
-        return _get_nic_info_ipconfig(all)
+        return {
+            'src': 'ipconfig (cygwin)',
+            'info': _get_nic_info_ipconfig(all),
+        }
 
     elif _PLATFORM == 'win32':
-        return _get_nic_info_ipconfig(all, cygwin=False)
+        return {
+            'src': 'ipconfig',
+            'info': _get_nic_info_ipconfig(all, cygwin=False),
+        }
 
-    return _get_nic_info_ifconfig(all)
+    return {
+        'src': 'ifconfig',
+        'info': _get_nic_info_ifconfig(all),
+    }
 
 
 def output(all=False):
-    print('Detected Network Interfaces:\n')
     result = get_nic_info(all)
-    for nic in result:
+    print('Detected Network Interfaces: ({})\n'.format(result['src']))
+    for nic in result['info']:
         print('{}: {}'.format(nic.name, nic.mac_addr))
         for i in zip(nic.ip_addr, nic.netmask_len):
             print('    IP/Mask: {}/{}'.format(*i))
