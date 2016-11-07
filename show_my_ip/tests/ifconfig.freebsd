@@ -2,7 +2,7 @@ re0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
 	options=8209b<RXCSUM,TXCSUM,VLAN_MTU,VLAN_HWTAGGING,VLAN_HWCSUM,WOL_MAGIC,LINKSTATE>
 	ether e0:3f:49:e7:82:7d
 	inet6 fe80::e23f:49ff:fee7:827d%re0 prefixlen 64 scopeid 0x1
-	inet 140.113.131.81 netmask 0xffffff80 broadcast 140.113.131.127
+	inet 192.168.1.1 netmask 0xffffff80 broadcast 192.168.1.127
 	nd6 options=29<PERFORMNUD,IFDISABLED,AUTO_LINKLOCAL>
 	media: Ethernet autoselect (100baseTX <full-duplex>)
 	status: active

@@ -1,5 +1,5 @@
 enp3s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
-        inet 140.113.235.151  netmask 255.255.255.0  broadcast 140.113.235.255
+        inet 192.168.1.1  netmask 255.255.255.0  broadcast 140.113.235.255
         inet6 2001:f18:113:235:2e0:81ff:fed0:ef57  prefixlen 64  scopeid 0x0<global>
         inet6 fe80::2e0:81ff:fed0:ef57  prefixlen 64  scopeid 0x20<link>
         ether 00:e0:81:d0:ef:57  txqueuelen 1000  (Ethernet)
@@ -7,7 +7,7 @@ enp3s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
         RX errors 0  dropped 485313  overruns 0  frame 0
         TX packets 13257474  bytes 7295061884 (6.7 GiB)
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-        device interrupt 16  memory 0xfbee0000-fbf00000  
+        device interrupt 16  memory 0xfbee0000-fbf00000
 
 lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
         inet 127.0.0.1  netmask 255.0.0.0
